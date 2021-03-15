@@ -1,12 +1,22 @@
 const csv = require('csvtojson/v2');
 const fs = require('fs');
+const { pipeline } = require('stream');
 
-const readable = fs.createReadStream('./assets/csv/nodejs-hw1-ex1.csv', { encoding: 'utf8' })
-  .on('error', console.error);
-const writable = fs.createWriteStream(`./output/result.txt`, { encoding: 'utf8' })
-  .on('error', console.error);
+const sourceFileName = './assets/csv/nodejs-hw1-ex1.csv';
+const targetFileName = './output/result.txt';
 
-csv()
-  .fromStream(readable)
-  .pipe(writable)
-;
+const readable = fs.createReadStream(sourceFileName, { encoding: 'utf8' });
+const writable = fs.createWriteStream(targetFileName, { encoding: 'utf8' });
+
+pipeline(
+  [
+    readable,
+    csv(),
+    writable,
+  ],
+  (err) => {
+    if (err) {
+      console.error(err);
+    }
+  },
+);
