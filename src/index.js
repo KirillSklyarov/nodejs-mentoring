@@ -1,22 +1,24 @@
 const csv = require('csvtojson/v2');
+const { promisify } = require('util');
 const fs = require('fs');
-const { pipeline } = require('stream');
+const { EOL } = require('os');
+
+const readFile = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile);
 
 const sourceFileName = './assets/csv/nodejs-hw1-ex1.csv';
 const targetFileName = './result.txt';
 
-const readable = fs.createReadStream(sourceFileName, { encoding: 'utf8' });
-const writable = fs.createWriteStream(targetFileName, { encoding: 'utf8' });
+(async function run() {
+  try {
+    const sourceContent = await readFile(sourceFileName, { encoding: 'utf8' });
+    let targetContent = '';
 
-pipeline(
-  [
-    readable,
-    csv(),
-    writable,
-  ],
-  (err) => {
-    if (err) {
-      console.error(err);
-    }
-  },
-);
+    await csv().fromString(sourceContent).subscribe(data => {
+      targetContent = targetContent + JSON.stringify(data) + EOL;
+    });
+    await writeFile(targetFileName, targetContent);
+  } catch (err) {
+    console.error(err);
+  }
+})();
