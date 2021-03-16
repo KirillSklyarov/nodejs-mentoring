@@ -12,4 +12,4 @@
 .vscode/*
 
 # result
-/output
+result.txt
