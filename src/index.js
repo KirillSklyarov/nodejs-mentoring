@@ -1,6 +1,6 @@
-const csv = require('csvtojson/v2');
-const fs = require('fs');
-const { pipeline } = require('stream');
+import csv from 'csvtojson/v2';
+import fs from 'fs';
+import { pipeline } from 'stream';
 
 const sourceFileName = './assets/csv/nodejs-hw1-ex1.csv';
 const targetFileName = './result.txt';
