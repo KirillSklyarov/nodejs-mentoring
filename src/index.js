@@ -1,7 +1,7 @@
-const csv = require('csvtojson/v2');
-const { promisify } = require('util');
-const fs = require('fs');
-const { EOL } = require('os');
+import csv from 'csvtojson/v2';
+import { promisify } from 'util';
+import fs from 'fs';
+import { EOL } from 'os';
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
