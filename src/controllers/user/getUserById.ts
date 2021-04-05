@@ -1,10 +1,10 @@
+import { Request, Response } from 'express';
 import { User } from '../../models/User';
-import { NextFunction, Request, Response } from 'express';
 import { getByIdFromDB } from '../../repositories/user';
 import { ApplicationError } from '../../models/application-error';
 import { UserDTO } from '../../models/UserDTO';
 
-export function getUserById(request: Request, response: Response, next: NextFunction) {
+export function getUserById(request: Request, response: Response) {
   let user: User;
   try {
     user = getByIdFromDB(request.params.id);
@@ -24,4 +24,3 @@ export function getUserById(request: Request, response: Response, next: NextFunc
 
   response.json(userDTO);
 }
-

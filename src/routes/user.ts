@@ -1,4 +1,4 @@
-import express, { json } from "express";
+import express, { json } from 'express';
 import { getUserById } from '../controllers/user/getUserById';
 import { createUserValidator } from '../middlewares/createUserValidator';
 import { createUser } from '../controllers/user/createUser';

@@ -16,5 +16,24 @@ module.exports = {
   ],
   rules: {
     'linebreak-style': ['error', 'windows'],
+    'import/prefer-default-export': 'off',
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        'js': 'never',
+        'ts': 'never',
+      }
+    ],
+    'no-console': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
+  },
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.ts'],
+      }
+    }
   },
 };

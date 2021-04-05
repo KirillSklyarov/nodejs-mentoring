@@ -1,6 +1,6 @@
 import { ValidatedRequest } from 'express-joi-validation';
-import { CreateUserSchema } from '../../middlewares/createUserValidator';
 import { Response } from 'express';
+import { CreateUserSchema } from '../../middlewares/createUserValidator';
 import { CreateUser } from '../../models/CreateUser';
 import { createUserInDB } from '../../repositories/user';
 import { ApplicationError } from '../../models/application-error';

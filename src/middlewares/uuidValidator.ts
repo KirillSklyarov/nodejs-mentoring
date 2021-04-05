@@ -1,6 +1,5 @@
 import * as Joi from 'joi';
-import { ContainerTypes, createValidator, ValidatedRequestSchema } from 'express-joi-validation';
-import { CreateUser } from '../models/CreateUser';
+import { createValidator } from 'express-joi-validation';
 
 const validator = createValidator({
   passError: true,
