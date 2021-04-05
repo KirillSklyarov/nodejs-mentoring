@@ -3,8 +3,9 @@ import { CreateUser } from '../models/CreateUser';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdateUser } from '../models/UpdateUser';
 import { ApplicationError } from '../models/application-error';
+import { UserDTO } from '../models/UserDTO';
 
-const store = new Map<string, User>();
+const store: Map<string, User> = new Map<string, User>();
 
 export function getByIdFromDB(id: string): User {
   const user: User | undefined = store.get(id);
@@ -49,4 +50,19 @@ export function updateUserInDB(id: string, updateUser: UpdateUser) {
 
   user.login = updateUser.login;
   user.age = updateUser.age;
+}
+
+export function findUsers(loginSbstring: string, limit: number): UserDTO[] {
+  return Array.from(store.values()).filter((user: User) => {
+    return user.login.includes(loginSbstring) && !user.isDeleted;
+  })
+    .sort((userA: User, userB: User) => userA.login.localeCompare(userB.login))
+    .map((user: User): UserDTO => {
+      return {
+        id: user.id,
+        login: user.login,
+        age: user.age,
+      };
+    })
+    .slice(0, limit);
 }
