@@ -6,7 +6,7 @@ const validator = createValidator({
 });
 
 const uuidSchema = Joi.object({
-  id: Joi.string().uuid(),
+  uuid: Joi.string().uuid(),
 });
 
 export const uuidValidator = validator.params(uuidSchema);

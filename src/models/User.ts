@@ -1,7 +1,45 @@
-export interface User {
-  id: string;
+import { Table, Column, Model, DataType } from 'sequelize-typescript'
+
+@Table
+export class User extends Model {
+  @Column({
+    type: DataType.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  })
+  id: number;
+
+  @Column({
+    type: DataType.UUID,
+    unique: true,
+  })
+  uuid: string;
+
+  @Column({
+    type: DataType.STRING(32),
+    unique: true,
+  })
   login: string;
-  password?: string;
+
+  @Column({
+    type: DataType.STRING(255),
+  })
+  password: string;
+
+  @Column({
+    type: DataType.STRING(32),
+  })
+  name: string;
+
+  @Column({
+    type: DataType.SMALLINT,
+  })
   age: number;
-  isDeleted?: boolean;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  })
+  isDeleted: false;
 }

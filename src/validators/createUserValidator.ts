@@ -1,12 +1,12 @@
 import * as Joi from 'joi';
-import { ContainerTypes, createValidator, ValidatedRequestSchema } from 'express-joi-validation';
-import { CreateUser } from '../models/CreateUser';
+import { createValidator } from 'express-joi-validation';
 
 const validator = createValidator({
   passError: true,
 });
 
-const userSchema = Joi.object({
+const createUserSchema = Joi.object({
+  name: Joi.string().required(),
   login: Joi.string().required(),
   password: Joi.string()
     .min(6)
@@ -18,8 +18,4 @@ const userSchema = Joi.object({
   age: Joi.number().integer().min(4).max(130),
 });
 
-export interface CreateUserSchema extends ValidatedRequestSchema {
-  [ContainerTypes.Body]: CreateUser,
-}
-
-export const createUserValidator = validator.body(userSchema);
+export const createUserValidator = validator.body(createUserSchema);
