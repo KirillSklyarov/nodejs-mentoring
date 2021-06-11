@@ -10,3 +10,7 @@
 .settings/
 *.sublime-workspace
 .vscode/*
+
+# ENV
+env.ts
+.env
