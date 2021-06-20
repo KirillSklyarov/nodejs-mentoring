@@ -1,7 +1,8 @@
 import 'reflect-metadata';
-import { User } from '../models/User';
+import { UpdateUserDTO, User, UserModelAttributes } from '../models/User';
 import { Service } from 'typedi';
 import { Op } from 'sequelize';
+import { Group } from '../models/Group';
 
 @Service()
 export class UserRepository {
@@ -29,10 +30,14 @@ export class UserRepository {
           [Op.startsWith]: mask,
         },
       },
+      include: {
+        model: Group,
+        required: true,
+      },
     });
   }
 
-  async update(uuid: string, updateUser: Partial<User['_attributes']>): Promise<User | null> {
+  async update(uuid: string, updateUser: Partial<UpdateUserDTO & Pick<UserModelAttributes, 'isDeleted'>> ): Promise<User | null> {
     const updatedUsers: [number, User[]] = await User.update(
       updateUser,
       {
