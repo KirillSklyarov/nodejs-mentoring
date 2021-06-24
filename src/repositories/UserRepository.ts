@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { UpdateUserDTO, User, UserModelAttributes } from '../models/User';
 import { Service } from 'typedi';
-import { Op } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import { Group } from '../models/Group';
 
 @Service()
@@ -17,6 +17,17 @@ export class UserRepository {
       where: {
         uuid,
         isDeleted: false,
+      },
+    });
+  }
+
+  async getByUuids(uuidList: string[], transaction: Transaction | null = null): Promise<User[]> {
+    return await User.findAll({
+      transaction,
+      where: {
+        uuid: {
+          [Op.in]: uuidList,
+        },
       },
     });
   }
@@ -37,7 +48,7 @@ export class UserRepository {
     });
   }
 
-  async update(uuid: string, updateUser: Partial<UpdateUserDTO & Pick<UserModelAttributes, 'isDeleted'>> ): Promise<User | null> {
+  async update(uuid: string, updateUser: Partial<UpdateUserDTO & Pick<UserModelAttributes, 'isDeleted'>>): Promise<User | null> {
     const updatedUsers: [number, User[]] = await User.update(
       updateUser,
       {

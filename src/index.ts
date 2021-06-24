@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import express, { NextFunction, Request, Response } from 'express';
 import { userRouter } from './routes/users';
-import { DatabaseService } from './services/database.service';
+import { DatabaseService } from './services/DatabaseService';
 import { Container } from 'typedi';
 import { JoiErrorHandler } from './errorHandlers/JoiErrorHandler';
 import { ExpressJoiError } from 'express-joi-validation';

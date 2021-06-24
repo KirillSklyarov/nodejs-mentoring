@@ -17,6 +17,7 @@ export class DatabaseService {
       password: DB_PASSWORD,
       dialect: DB_DIALECT as Dialect,
       models: [User, Group, UserGroup],
+      // logging: (...msg) => console.log(msg),
     });
 
     Container.set<Sequelize>(Sequelize, sequelize);

@@ -4,11 +4,13 @@ import { NextFunction, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { Inject, Service } from 'typedi';
 import { GroupRepository } from '../repositories/GroupRepository';
-import { GroupMapperService } from '../services/group-mapper.service';
+import { GroupMapperService } from '../services/GroupMapperService';
 import { EntityUuidSchema } from '../schemas/EntityUuidSchema';
 import { Group } from '../models/Group';
 import { CreateGroupSchema } from '../schemas/groups/CreateGroupSchema';
 import { UpdateGroupSchema } from '../schemas/groups/UpdateGroupSchema';
+import { AddUsersToGroupSchema } from '../schemas/groups/AddUsersToGroupSchema';
+import { User } from '../models/User';
 
 @Service()
 export class GroupController {
@@ -84,6 +86,23 @@ export class GroupController {
       response.json({
         data: {
           group: { uuid },
+        },
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async addUsers(request: ValidatedRequest<AddUsersToGroupSchema>, response: Response, next: NextFunction): Promise<void> {
+    const uuid = request.params.uuid;
+    const userUuids = request.body.users;
+
+    try {
+      const group: Group = await this.groupRepository.addUsers(uuid, userUuids);
+
+      response.json({
+        data: {
+          group: this.groupMapper.map(group),
         },
       });
     } catch (e) {

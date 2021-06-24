@@ -3,6 +3,6 @@ import { EntityDTO } from '../../models/Entity';
 import { UpdateUserDTO } from '../../models/User';
 
 export interface UpdateUserSchema extends ValidatedRequestSchema {
-  [ContainerTypes.Body]: UpdateUserDTO,
   [ContainerTypes.Params]: EntityDTO,
+  [ContainerTypes.Body]: UpdateUserDTO,
 }

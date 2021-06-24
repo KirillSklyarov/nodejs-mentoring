@@ -1,6 +1,6 @@
 import { Container, Service } from "typedi";
 import { ResponseUserDTO, User } from '../models/User';
-import { GroupMapperService } from './group-mapper.service';
+import { GroupMapperService } from './GroupMapperService';
 import { Group } from '../models/Group';
 
 @Service()

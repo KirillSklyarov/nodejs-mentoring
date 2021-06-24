@@ -8,7 +8,7 @@ import { Inject, Service } from 'typedi';
 import { UpdateUserSchema } from '../schemas/users/UpdateUserSchema';
 import { AutoSuggestUserSchema } from '../schemas/users/AutoSuggestUserSchema';
 import { CreateUserSchema } from '../schemas/users/CreateUserSchema';
-import { UserMapperService } from '../services/user-mapper.service';
+import { UserMapperService } from '../services/UserMapperService';
 import { EntityUuidSchema } from '../schemas/EntityUuidSchema';
 
 @Service()

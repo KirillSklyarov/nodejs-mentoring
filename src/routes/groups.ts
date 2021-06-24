@@ -9,6 +9,8 @@ import { CreateGroupSchema } from '../schemas/groups/CreateGroupSchema';
 import { createGroupValidator } from '../validators/groups/createGroupValidator';
 import { updateGroupValidator } from '../validators/groups/updateGroupValidator';
 import { UpdateGroupSchema } from '../schemas/groups/UpdateGroupSchema';
+import { AddUsersToGroupSchema } from '../schemas/groups/AddUsersToGroupSchema';
+import { userListValidator } from '../validators/groups/userListValidator';
 
 export const groupRouter = express.Router();
 
@@ -38,4 +40,8 @@ groupRouter.patch('/:uuid', json(), uuidValidator, updateGroupValidator,
 groupRouter.delete('/:uuid', uuidValidator,
   (request: ValidatedRequest<EntityUuidSchema>, response: Response, next: NextFunction) => {
     groupController.delete(request, response, next);
+  });
+groupRouter.post('/:uuid', json(), uuidValidator, userListValidator,
+  (request: ValidatedRequest<AddUsersToGroupSchema>, response: Response, next: NextFunction) => {
+    groupController.addUsers(request, response, next);
   });
