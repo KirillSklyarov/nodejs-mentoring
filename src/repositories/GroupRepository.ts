@@ -59,39 +59,11 @@ export class GroupRepository {
     });
   }
 
-  async addUsers(uuid: string, userUuids: string[]): Promise<Group> {
-    const sequelize: Sequelize = Container.get(Sequelize);
-    const transaction = await sequelize.transaction();
-    let group: Group | null = null;
-
-    try {
-      group = await this.get(uuid, transaction);
-      if (!group) {
-        throw new ApplicationError(`Group ${uuid} not found`, 400);
-      } else {
-        const userRepository: UserRepository = Container.get(UserRepository);
-        const users: User[] = await userRepository.getByUuids(userUuids, transaction);
-        if (users.length < userUuids.length) {
-          const notFoundUserUuids: string[] = [];
-          userUuids.forEach((userUuid: string) => {
-            const user = users.find((user: User) => user.uuid === userUuid);
-            if (!user) {
-              notFoundUserUuids.push(userUuid);
-            }
-          });
-          throw new ApplicationError(`Users not found: ` + notFoundUserUuids.join(', '), 400);
-        } else {
-          await group.$add('users', users, { transaction });
-          await group.save({ transaction });
-          await transaction.commit();
-        }
-      }
-    } catch (e) {
-      await transaction.rollback();
-      throw e;
-    }
-
+  async addUsers(group: Group, users: User[], transaction: Transaction | null = null): Promise<Group> {
+    await group.$add('users', users, { transaction });
+    await group.save({ transaction });
     await group.reload({
+      transaction,
       include: {
         model: User,
         attributes: ['uuid'],

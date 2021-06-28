@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { ValidatedRequest } from 'express-joi-validation';
 import { NextFunction, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { Inject, Service } from 'typedi';
+import { Container, Inject, Service } from 'typedi';
 import { GroupRepository } from '../repositories/GroupRepository';
 import { GroupMapperService } from '../services/GroupMapperService';
 import { EntityUuidSchema } from '../schemas/EntityUuidSchema';
@@ -11,11 +11,17 @@ import { CreateGroupSchema } from '../schemas/groups/CreateGroupSchema';
 import { UpdateGroupSchema } from '../schemas/groups/UpdateGroupSchema';
 import { AddUsersToGroupSchema } from '../schemas/groups/AddUsersToGroupSchema';
 import { User } from '../models/User';
+import { Sequelize } from 'sequelize-typescript';
+import { ApplicationError } from '../models/ApplicationError';
+import { UserRepository } from '../repositories/UserRepository';
 
 @Service()
 export class GroupController {
   @Inject()
   private groupRepository: GroupRepository;
+
+  @Inject()
+  private userRepository: UserRepository;
 
   @Inject()
   private groupMapper: GroupMapperService;
@@ -96,9 +102,24 @@ export class GroupController {
   async addUsers(request: ValidatedRequest<AddUsersToGroupSchema>, response: Response, next: NextFunction): Promise<void> {
     const uuid = request.params.uuid;
     const userUuids = request.body.users;
+    const sequelize: Sequelize = Container.get(Sequelize);
+    const transaction = await sequelize.transaction();
 
     try {
-      const group: Group = await this.groupRepository.addUsers(uuid, userUuids);
+      const group: Group | null = await this.groupRepository.get(uuid, transaction);
+      if (!group) {
+        next(new ApplicationError(`Group ${uuid} not found`, 400));
+        return;
+      }
+
+      const users: User[] = await this.userRepository.getByUuids(userUuids, transaction);
+      if (users.length < userUuids.length) {
+        next(new ApplicationError(`Users not found`, 400));
+        return;
+      }
+
+      await this.groupRepository.addUsers(group, users, transaction);
+      await transaction.commit();
 
       response.json({
         data: {
@@ -106,6 +127,7 @@ export class GroupController {
         },
       });
     } catch (e) {
+      await transaction.rollback();
       next(e);
     }
   }
