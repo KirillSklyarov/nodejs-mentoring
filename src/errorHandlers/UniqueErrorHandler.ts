@@ -2,27 +2,21 @@ import { Service } from 'typedi';
 import { ExpressJoiError } from 'express-joi-validation';
 import { NextFunction, Request, Response } from 'express';
 import { ApplicationError } from '../models/ApplicationError';
+import { UniqueConstraintError, ValidationErrorItem } from 'sequelize';
 
 @Service()
-export class AppErrorHandler {
+export class UniqueErrorHandler {
   handle(
     err: any,
     req: Request,
     res: Response,
     next: NextFunction,
   ) {
-    if (err && err.code) {
-      res.status(err.code).json({
-        error: {
-          message: err.toString(),
-        },
-      });
+    if (err instanceof UniqueConstraintError) {
+      const message: string = err.errors.map((error: ValidationErrorItem) => error.message).join('; ');
+      next(new ApplicationError(message, 409));
     } else {
-      res.status(500).json({
-        error: {
-          message: 'Internal Server Error',
-        },
-      });
+      next(err);
     }
   }
 }

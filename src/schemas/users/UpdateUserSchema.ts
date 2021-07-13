@@ -1,7 +1,8 @@
 import { ContainerTypes, ValidatedRequestSchema } from 'express-joi-validation';
-import { UpdateUserDTO, UuidDTO } from '../models/UserDTO';
+import { EntityDTO } from '../../models/Entity';
+import { UpdateUserDTO } from '../../models/User';
 
 export interface UpdateUserSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Params]: EntityDTO,
   [ContainerTypes.Body]: UpdateUserDTO,
-  [ContainerTypes.Params]: UuidDTO,
 }
