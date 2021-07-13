@@ -34,11 +34,13 @@
     "express": "^4.17.1",
     "express-joi-validation": "^5.0.0",
     "joi": "^17.4.0",
+    "lodash-ts": "^1.2.7",
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.6.2",
     "sequelize-typescript": "^2.1.0",
     "typedi": "^0.10.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
   }
 }
