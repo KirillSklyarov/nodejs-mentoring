@@ -6,7 +6,9 @@ import { Group } from '../models/Group';
 import { UserGroup } from '../models/UserGroup';
 
 export function databaseLoader(): void {
-  const { DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_DIALECT } = process.env;
+  const {
+    DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_DIALECT,
+  } = process.env;
   const sequelize = new Sequelize({
     host: DB_HOST,
     database: DB_NAME,

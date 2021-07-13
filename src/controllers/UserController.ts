@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 import { ValidatedRequest } from 'express-joi-validation';
 import { NextFunction, Response } from 'express';
-import { User } from '../models/User';
 import { v4 as uuidv4 } from 'uuid';
-import { UserRepository } from '../repositories/UserRepository';
 import { Inject, Service } from 'typedi';
+import { User } from '../models/User';
+import { UserRepository } from '../repositories/UserRepository';
 import { UpdateUserSchema } from '../schemas/users/UpdateUserSchema';
 import { AutoSuggestUserSchema } from '../schemas/users/AutoSuggestUserSchema';
 import { CreateUserSchema } from '../schemas/users/CreateUserSchema';
@@ -40,7 +40,7 @@ export class UserController {
   @ErrorLog()
   @ExceptionCatcher()
   async get(request: ValidatedRequest<EntityUuidSchema>, response: Response, next: NextFunction): Promise<void> {
-    const uuid: string = request.params.uuid;
+    const { uuid } = request.params;
 
     const user = await this.userRepository.get(uuid);
 
@@ -69,14 +69,14 @@ export class UserController {
     });
 
     response.json({
-      data: { user: updatedUser ? this.userMapper.map(updatedUser) : null, },
+      data: { user: updatedUser ? this.userMapper.map(updatedUser) : null },
     });
   }
 
   @ErrorLog()
   @ExceptionCatcher()
   async delete(request: ValidatedRequest<EntityUuidSchema>, response: Response, next: NextFunction): Promise<void> {
-    const uuid = request.params.uuid;
+    const { uuid } = request.params;
     const updatedUser: User | null = await this.userRepository.update(uuid, { isDeleted: true });
 
     response.json({

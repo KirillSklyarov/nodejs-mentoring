@@ -1,9 +1,12 @@
 import 'reflect-metadata';
-import express, { json, NextFunction, Request, Response } from 'express';
-import { userRouter } from './routes/users';
+import express, {
+  json, NextFunction, Request, Response,
+} from 'express';
 import { Container } from 'typedi';
-import { JoiErrorHandler } from './errorHandlers/JoiErrorHandler';
 import { ExpressJoiError } from 'express-joi-validation';
+import { Logger } from 'winston';
+import { userRouter } from './routes/users';
+import { JoiErrorHandler } from './errorHandlers/JoiErrorHandler';
 import { ApplicationError } from './models/ApplicationError';
 import { AppErrorHandler } from './errorHandlers/AppErrorHandler';
 import { groupRouter } from './routes/groups';
@@ -11,7 +14,6 @@ import { UniqueErrorHandler } from './errorHandlers/UniqueErrorHandler';
 import { loggerLoader } from './loaders/loggerLoader';
 import { databaseLoader } from './loaders/databaseLoader';
 import { LoggerMiddleware } from './middlewares/LoggerMiddleware';
-import { Logger } from 'winston';
 import { LOGGER_TOKEN } from './tokens/LOGGER_TOKEN';
 
 const app = express();
@@ -35,7 +37,7 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (error) => {
   logger.error({
     type: 'unhandledRejection',
-    error: error,
+    error,
   });
 });
 
@@ -60,9 +62,7 @@ app.use(json())
     req: Request,
     res: Response,
     next: NextFunction,
-  ) => appErrorHandler.handle(err, req, res, next))
-;
-
+  ) => appErrorHandler.handle(err, req, res, next));
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
 });
