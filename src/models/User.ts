@@ -1,4 +1,6 @@
-import { Table, Column, DataType, BelongsToMany } from 'sequelize-typescript'
+import {
+  Table, Column, DataType, BelongsToMany,
+} from 'sequelize-typescript';
 import { Group, GroupModelAttributes, ResponseGroupDTO } from './Group';
 import { UserGroup } from './UserGroup';
 import { Entity } from './Entity';

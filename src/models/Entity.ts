@@ -19,5 +19,3 @@ export abstract class Entity<TModelAttributes extends {} = EntityModelAttributes
   })
   uuid: string;
 }
-
-

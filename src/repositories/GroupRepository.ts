@@ -1,15 +1,14 @@
 import 'reflect-metadata';
 import { Container, Service } from 'typedi';
-import { Group, UpdateGroupDTO } from '../models/Group';
 import { Sequelize } from 'sequelize-typescript';
-import { UserRepository } from './UserRepository';
 import { Transaction } from 'sequelize';
+import { Group, UpdateGroupDTO } from '../models/Group';
+import { UserRepository } from './UserRepository';
 import { ApplicationError } from '../models/ApplicationError';
 import { User } from '../models/User';
 
 @Service()
 export class GroupRepository {
-
   async create(group: Group): Promise<Group> {
     await group.save();
 
@@ -46,7 +45,8 @@ export class GroupRepository {
           uuid,
         },
         returning: true,
-      });
+      },
+    );
 
     return updatedGroups[0] === 0 ? null : updatedGroups[1][0];
   }

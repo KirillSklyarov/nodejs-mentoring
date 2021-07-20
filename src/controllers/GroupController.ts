@@ -3,6 +3,7 @@ import { ValidatedRequest } from 'express-joi-validation';
 import { NextFunction, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { Container, Inject, Service } from 'typedi';
+import { Sequelize } from 'sequelize-typescript';
 import { GroupRepository } from '../repositories/GroupRepository';
 import { GroupMapperService } from '../services/GroupMapperService';
 import { EntityUuidSchema } from '../schemas/EntityUuidSchema';
@@ -11,9 +12,10 @@ import { CreateGroupSchema } from '../schemas/groups/CreateGroupSchema';
 import { UpdateGroupSchema } from '../schemas/groups/UpdateGroupSchema';
 import { AddUsersToGroupSchema } from '../schemas/groups/AddUsersToGroupSchema';
 import { User } from '../models/User';
-import { Sequelize } from 'sequelize-typescript';
 import { ApplicationError } from '../models/ApplicationError';
 import { UserRepository } from '../repositories/UserRepository';
+import { ExceptionCatcher } from '../decorators/ExceptionCatcher';
+import { ErrorLog } from '../decorators/ErrorLog';
 
 @Service()
 export class GroupController {
@@ -26,6 +28,8 @@ export class GroupController {
   @Inject()
   private groupMapper: GroupMapperService;
 
+  @ErrorLog()
+  @ExceptionCatcher()
   async create(request: ValidatedRequest<CreateGroupSchema>, response: Response, next: NextFunction): Promise<void> {
     try {
       const group = Group.build({
@@ -38,69 +42,65 @@ export class GroupController {
 
       response.json({ data: { uuid: createdGroup.uuid } });
     } catch (e) {
-      next(e)
+      next(e);
     }
-
   }
 
+  @ErrorLog()
+  @ExceptionCatcher()
   async get(request: ValidatedRequest<EntityUuidSchema>, response: Response, next: NextFunction): Promise<void> {
     try {
-      const uuid: string = request.params.uuid;
+      const { uuid } = request.params;
 
       const group = await this.groupRepository.get(uuid);
 
       response.status(200).json({
-        data: { group: group ? this.groupMapper.map(group) : null, },
+        data: { group: group ? this.groupMapper.map(group) : null },
       });
     } catch (e) {
       next(e);
     }
   }
 
+  @ErrorLog()
+  @ExceptionCatcher()
   async getAll(response: Response, next: NextFunction): Promise<void> {
-    try {
-      const groups = await this.groupRepository.getAll();
+    const groups = await this.groupRepository.getAll();
 
-      response.status(200).json({
-        data: { groups: groups.map((group: Group) => this.groupMapper.map(group)), },
-      });
-    } catch (e) {
-      next(e);
-    }
+    response.status(200).json({
+      data: { groups: groups.map((group: Group) => this.groupMapper.map(group)) },
+    });
   }
 
+  @ErrorLog()
+  @ExceptionCatcher()
   async update(request: ValidatedRequest<UpdateGroupSchema>, response: Response, next: NextFunction): Promise<void> {
-    try {
-      const updatedGroup = await this.groupRepository.update(request.params.uuid, {
-        name: request.body.name,
-        permissions: request.body.permissions,
-      });
+    const updatedGroup = await this.groupRepository.update(request.params.uuid, {
+      name: request.body.name,
+      permissions: request.body.permissions,
+    });
 
-      response.json({
-        data: { group: updatedGroup ? this.groupMapper.map(updatedGroup) : null },
-      });
-    } catch (e) {
-      next(e);
-    }
+    response.json({
+      data: { group: updatedGroup ? this.groupMapper.map(updatedGroup) : null },
+    });
   }
 
+  @ErrorLog()
+  @ExceptionCatcher()
   async delete(request: ValidatedRequest<EntityUuidSchema>, response: Response, next: NextFunction): Promise<void> {
-    try {
-      const uuid = request.params.uuid;
-      const result = await this.groupRepository.delete(uuid);
+    const { uuid } = request.params;
+    const result = await this.groupRepository.delete(uuid);
 
-      response.json({
-        data: {
-          group: { uuid },
-        },
-      });
-    } catch (e) {
-      next(e);
-    }
+    response.json({
+      data: {
+        group: { uuid },
+      },
+    });
   }
 
+  @ErrorLog()
   async addUsers(request: ValidatedRequest<AddUsersToGroupSchema>, response: Response, next: NextFunction): Promise<void> {
-    const uuid = request.params.uuid;
+    const { uuid } = request.params;
     const userUuids = request.body.users;
     const sequelize: Sequelize = Container.get(Sequelize);
     const transaction = await sequelize.transaction();
@@ -114,7 +114,7 @@ export class GroupController {
 
       const users: User[] = await this.userRepository.getByUuids(userUuids, transaction);
       if (users.length < userUuids.length) {
-        next(new ApplicationError(`Users not found`, 400));
+        next(new ApplicationError('Users not found', 400));
         return;
       }
 

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import { UpdateUserDTO, User, UserModelAttributes } from '../models/User';
 import { Service } from 'typedi';
 import { Op, Transaction } from 'sequelize';
+import { UpdateUserDTO, User, UserModelAttributes } from '../models/User';
 import { Group } from '../models/Group';
 
 @Service()
@@ -57,7 +57,8 @@ export class UserRepository {
           isDeleted: false,
         },
         returning: true,
-      });
+      },
+    );
 
     return updatedUsers[0] === 0 ? null : updatedUsers[1][0];
   }
